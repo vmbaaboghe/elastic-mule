@@ -14,61 +14,54 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.api.MuleContext;
 import org.mule.api.MuleEventContext;
 import org.mule.api.MuleMessage;
-import org.mule.api.annotations.Module;
-import org.mule.api.annotations.Processor;
 import org.mule.api.context.MuleContextAware;
 import org.mule.api.lifecycle.Callable;
-import org.mule.elasticsearch.utils.MuleJsonToGsonConverter;
 import org.mule.module.json.JsonData;
 
-import com.google.gson.JsonObject;
 
 /**
  * ElasticSearch is a powerful indexed search engine.
  * For more informations, see http://www.elasticsearch.org
  * @author Valery MBAABOGHE
  */
-@Module(name = "elasticsearch", schemaVersion = "0.0.1", description = "Elastic Search Integration", friendlyName = "Elastic Search")
 public class ElasticSearchConnector implements MuleContextAware,Callable  {
 	
-	private ElasticSearchClient elasticSearchClient;
-
-	private MuleJsonToGsonConverter muleJsonToGsonConverter;
-
-	public static final String CLUSTER="cluster"; 
+	private IElasticSearchClient elasticSearchClient;
+	
+	public static final String CLUSTER_HOST="host";
+	public static final String CLUSTER_PORT="port"; 
 
 	protected transient Log logger = LogFactory.getLog(getClass());
 
-	private String clusterAddress;
+	private String clusterHost;
+	
+	private Integer clusterPort;
 
 	private String indexName;
 
 	private String indexType;
 	
-	public ElasticSearchConnector(){
-		init();
-	}
+	private MuleContext muleContext;
 	
-
-	@PostConstruct
-	public void init() {
-		elasticSearchClient = new MuleJestClient();
-
-		Map<String,String> props = new HashMap<String,String>();
-
-		props.put(CLUSTER, getClusterAddress());
-		elasticSearchClient.initClient(props);
-
-		muleJsonToGsonConverter = new MuleJsonToGsonConverter();
+	public ElasticSearchConnector(){		
 	}
 
-	private ElasticSearchClient getElasticSearchClient()  {
+	public void init() {
+	 	elasticSearchClient = new ElasticSearchClientImpl();
+
+		Map<String,Object> props = new HashMap<String,Object>();
+
+		props.put(CLUSTER_HOST, getClusterHost());
+		props.put(CLUSTER_PORT, getClusterPort());
+		elasticSearchClient.initClient(props);		
+	}
+
+	private IElasticSearchClient getElasticSearchClient()  {
 		if(elasticSearchClient==null){
 			init();
 		}
@@ -78,44 +71,15 @@ public class ElasticSearchConnector implements MuleContextAware,Callable  {
 
 	@Override
 	public void setMuleContext(MuleContext context) {
-		getElasticSearchClient().setMuleContext(context);	
+		this.muleContext = context;
 	}
-
-	/**
-	 * Create new Index
-	 * @param source
-	 * @throws ElasticEsbException
-	 */
-	@Processor
-	public void createNewIndex(Map<Object, Object> source) throws ElasticEsbException {
-		try{
-			getElasticSearchClient().createIndex(source);
-		} catch(IOException ioException){
-			throw new ElasticEsbException("Fail to create new Index ",ioException);
-		}
-	}
-
 	
-	/**
-	 * Create new Index
-	 * @param source
-	 * @throws ElasticEsbException
-	 */
-	@Processor
-	public void createIndexJSON(JsonObject obj,String name,String type) throws ElasticEsbException {
-		try{
-			getElasticSearchClient().indexDocument(obj,name,type);
-		} catch(IOException ioException){
-			throw new ElasticEsbException("Fail to create new Index ",ioException);
-		}
-	}
 
 	/**
 	 * Create new Index
 	 * @param source
 	 * @throws ElasticEsbException
 	 */
-	@Processor
 	public void createIndexNameType(String indexName,String indexType) throws ElasticEsbException {
 		try{
 			getElasticSearchClient().createIndex(indexName,indexType);
@@ -124,19 +88,6 @@ public class ElasticSearchConnector implements MuleContextAware,Callable  {
 		}
 	}	
 
-	/**
-	 * Create new Index
-	 * @param source
-	 * @throws ElasticEsbException
-	 */
-	@Processor
-	public void createNewIndex(Map<Object, Object> source,String indexName,String indexType) throws ElasticEsbException {
-		try{
-			getElasticSearchClient().createIndex(source,indexName,indexType);
-		} catch(IOException ioException){
-			throw new ElasticEsbException("Fail to create new Index ",ioException);
-		}
-	}
 
 	@Override
 	public Object onCall(MuleEventContext eventContext) throws Exception {
@@ -147,7 +98,7 @@ public class ElasticSearchConnector implements MuleContextAware,Callable  {
 		if(payload instanceof JsonData ){ //Index a new document
 			jsonData = payload.toString();
 		}
-		if(payload instanceof String){ //Index a json document received as string
+		else if(payload instanceof String){ //Index a json document received as string
 			jsonData = (String)payload;
 		}
 		else if(payload instanceof Object[] ){ //Create a new index
@@ -168,12 +119,12 @@ public class ElasticSearchConnector implements MuleContextAware,Callable  {
 		return payload;
 	}
 
-	public String getClusterAddress() {
-		return clusterAddress;
+	public String getClusterHost() {
+		return clusterHost;
 	}
 
-	public void setClusterAddress(String clusterAddress) {
-		this.clusterAddress = clusterAddress;
+	public void setClusterHost(String clusterHost) {
+		this.clusterHost = clusterHost;
 	}
 
 	public String getIndexName() {
@@ -193,4 +144,21 @@ public class ElasticSearchConnector implements MuleContextAware,Callable  {
 	}
 
 
+	public Integer getClusterPort() {
+		return clusterPort;
+	}
+
+
+	public void setClusterPort(Integer clusterPort) {
+		this.clusterPort = clusterPort;
+	}
+
+	public void createIndexNameType(String jsonString, String indexName,String indexType) throws ElasticEsbException {
+		try {
+			getElasticSearchClient().indexDocument(jsonString, indexName, indexType);
+		} catch (IOException ioException) {
+			throw new ElasticEsbException("Fail to create new Index ",ioException);
+		}
+	}
+	
 }

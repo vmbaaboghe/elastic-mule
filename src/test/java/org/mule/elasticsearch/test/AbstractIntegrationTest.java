@@ -10,21 +10,20 @@ package org.mule.elasticsearch.test;
 
 import org.junit.Before;
 import org.mule.elasticsearch.ElasticSearchConnector;
-import org.mule.elasticsearch.utils.MuleJsonToGsonConverter;
 import org.mule.tck.AbstractMuleTestCase;
+
 
 public abstract class  AbstractIntegrationTest extends AbstractMuleTestCase {
 	
 	protected ElasticSearchConnector elasticSearchConnector;
-	protected MuleJsonToGsonConverter muleJson ;
 	
 
 	@Before
 	public void doSetUp() throws Exception {		
 		elasticSearchConnector = new ElasticSearchConnector();
-		elasticSearchConnector.setClusterAddress("http://localhost:9200");
+		elasticSearchConnector.setClusterPort(9300);
+		elasticSearchConnector.setClusterHost("localhost");
 		elasticSearchConnector.init();		
-		muleJson = new MuleJsonToGsonConverter();
 	}
 	
 }

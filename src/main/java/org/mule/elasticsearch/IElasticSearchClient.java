@@ -15,24 +15,11 @@ import java.util.Map;
 
 import org.mule.api.MuleContext;
 
-import com.google.gson.JsonObject;
 
-public interface ElasticSearchClient extends java.io.Serializable {
-	
-	public void createIndex(Map<Object,Object> source)  throws IOException;
+public interface IElasticSearchClient extends java.io.Serializable {
 	
 	
 	public void createIndex(String indexName,String indexType) throws IOException;
-	
-	public void createIndex(Map<Object,Object> source,String indexName,String indexType) throws IOException;
-	
-	/**
-	 * Index a document stored as JSON object
-	 * @param object
-	 * @param indexType 
-	 * @param indexName 
-	 */
-	public void indexDocument(JsonObject object, String indexName, String indexType ) throws IOException;
 	
 	/**
 	 * Index a document stored as JSON object
@@ -53,12 +40,10 @@ public interface ElasticSearchClient extends java.io.Serializable {
 	 * Initialise client properties
 	 * @param properties
 	 */
-	public void initClient(Map<String, String> properties);
+	public void initClient(Map<String, Object> properties);
 	
 	/**
 	 * Shutdown the current client
 	 */
 	public void shutdownClient();
-
-	public void setMuleContext(MuleContext context);
 }

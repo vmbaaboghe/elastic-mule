@@ -2,14 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mule.modules</groupId>
   <artifactId>mule-module-elastic-search</artifactId>
-  <version>0.1</version>
+  <version>0.2</version>
   <name>Elastic Search Connector</name>
   <description>Connector allowing mule esb to index and search in an Elastic Search Engine</description>
-   <parent>
+  <parent>
         <groupId>org.mule.tools.devkit</groupId>
         <artifactId>mule-devkit-parent</artifactId>
         <version>3.3.1</version>
-    </parent>  
+    </parent>   
   <dependencies>
       <dependency>
             <groupId>org.mule.transports</groupId>
@@ -20,12 +20,12 @@
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-json</artifactId>
             <version>3.3.0</version>
-        </dependency>         
-	   <dependency>
-	     <groupId>io.searchbox</groupId>
-	     <artifactId>jest</artifactId>
-	     <version>0.0.1</version>
-	  </dependency>
+        </dependency>
+        <dependency>
+    		<groupId>org.elasticsearch</groupId>
+    		<artifactId>elasticsearch</artifactId>
+    		<version>0.19.11</version>
+        </dependency>        
   </dependencies>
   <repositories>
   <repository>
