@@ -4,6 +4,12 @@ elasticMule
 It's a simple component using the Jest client which allow you to connect mule esb and an elastic search cluster.
 To use it , you just have to add jar got with a mvn package command and add it to the classpath of your mule
 application.
+--------------------------------------------------------------------------------------------------------------
+
+Update 0.2
+
+This component is no more base on Jest. The native Java api is quicker than the rest client. Maybe , I missed something
+but i changed my mind and i prefer now directly use it.
 
 pre-requisites
 Java 1.6
@@ -12,6 +18,8 @@ Java 1.6
     | Mule Elastic Search Plugin | ElasticSearch       |
     ---------------------------------------------------
     | master                     | 0.19.11 -> master   |
+    ---------------------------------------------------
+    | 0.2                        | 0.19.11 -> master   |
     ---------------------------------------------------
     | 0.1                        | 0.19.11 -> master   |
     ---------------------------------------------------
@@ -26,7 +34,8 @@ instruction :
  
        <component doc:name="Elastic Search Connector">
           <singleton-object class="org.mule.elasticsearch.ElasticSearchConnector"  >
-                <property key="clusterAddress" value="${mule.clusterAddress.property}"/>
+             <property key="clusterPort" value="${mule.cluster.port}"/>
+             <property key="clusterHost" value="${mule.cluster.host}"/> 
            	 <property key="indexName" value="${mule.indexName.value}"/>
            	 <property key="indexType" value="${mule.indexType.value}"/>
           </singleton-object>
@@ -37,7 +46,8 @@ instruction :
 In your mule-app.properties, you'll have to define the following properties:
 
     -------------------------------------------------------
-    |mule.clusterAddress.property=http://localhost:9200    |
+    |mule.cluster.host=localhost                           |
+    |mule.cluster.port=9300                                |
     |mule.indexName.value=indexName                        |
     |mule.indexType.value=indexType                        |
     -------------------------------------------------------
