@@ -60,7 +60,6 @@ public class ElasticSearchConnector implements MuleContextAware,Callable  {
 	public void init() {
 		elasticSearchClient = new MuleJestClient();
 
-		/** Properties à prendre dans un fichier de conf **/
 		Map<String,String> props = new HashMap<String,String>();
 
 		props.put(CLUSTER, getClusterAddress());
@@ -142,7 +141,6 @@ public class ElasticSearchConnector implements MuleContextAware,Callable  {
 	@Override
 	public Object onCall(MuleEventContext eventContext) throws Exception {
 
-		System.out.println(" Cluster address "+getClusterAddress());
 		MuleMessage muleMessage = eventContext.getMessage();
 		String jsonData = null;
 		Object payload = muleMessage.getPayload();
